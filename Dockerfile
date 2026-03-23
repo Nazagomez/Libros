@@ -37,8 +37,8 @@ RUN mkdir -p bootstrap/cache storage/framework/sessions storage/framework/views 
     && chmod -R 775 storage bootstrap/cache \
     && touch database/database.sqlite \
     && cp .env.example .env \
-    && php artisan key:generate --force --no-interaction \
-    && php artisan package:discover --ansi
+    && sed -i '/^APP_KEY=/d' .env \
+    && chmod +x docker/entrypoint.sh
 
 ENV SESSION_DRIVER=file \
     CACHE_STORE=file \
@@ -47,4 +47,4 @@ ENV SESSION_DRIVER=file \
 
 EXPOSE 8080
 
-CMD ["sh", "-c", "php artisan serve --host=0.0.0.0 --port=${PORT:-8080}"]
+ENTRYPOINT ["/var/www/html/docker/entrypoint.sh"]

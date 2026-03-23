@@ -30,6 +30,6 @@ Abre `http://127.0.0.1:8000`.
 | `APP_DEBUG` | `false` |
 | `APP_URL` | La URL que te da Render (ej. `https://tu-app.onrender.com`) |
 
-El contenedor arranca con `php artisan serve` en el puerto que define Render (`PORT`).
+El contenedor arranca con `php -S` (servidor embebido de PHP) sirviendo `public/`, usando el puerto que define Render (`PORT`). No se ejecuta `php artisan` en el build (evita fallos en la imagen); `APP_KEY` debe existir como variable de entorno en Render.
 
 En el repositorio, `.env.example` usa `SESSION_DRIVER=file`, `CACHE_STORE=file` y `QUEUE_CONNECTION=sync` para que Artisan y el despliegue no dependan de tablas en base de datos (esta tarea no usa BD).
