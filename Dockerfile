@@ -2,11 +2,19 @@ FROM php:8.3-cli-bookworm
 
 WORKDIR /var/www/html
 
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    git unzip libzip-dev \
-    && docker-php-ext-configure zip \
-    && docker-php-ext-install zip pdo pdo_sqlite \
-    && rm -rf /var/lib/apt/lists/*
+RUN set -eux; \
+    apt-get update; \
+    DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+        git \
+        unzip \
+        libzip-dev \
+        libsqlite3-dev \
+        pkg-config \
+    ; \
+    docker-php-ext-configure zip; \
+    docker-php-ext-install -j"$(nproc)" zip pdo pdo_sqlite; \
+    apt-get clean; \
+    rm -rf /var/lib/apt/lists/*
 
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
