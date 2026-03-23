@@ -1,4 +1,4 @@
-# Install PHP dependencies using Composer's image (avoids missing extensions during install).
+# Install PHP dependencies using Composer's image.
 FROM composer:2 AS vendor
 WORKDIR /app
 COPY composer.json composer.lock ./
@@ -33,12 +33,12 @@ COPY --from=vendor /app/vendor ./vendor
 COPY . .
 
 RUN mkdir -p bootstrap/cache storage/framework/sessions storage/framework/views storage/framework/cache/data storage/logs \
-    && chmod -R 775 storage bootstrap/cache
-
-RUN cp .env.example .env \
-    && php artisan key:generate --force --no-interaction
-
-RUN php artisan package:discover --ansi
+    database \
+    && chmod -R 775 storage bootstrap/cache \
+    && touch database/database.sqlite \
+    && cp .env.example .env \
+    && php artisan key:generate --force --no-interaction \
+    && php artisan package:discover --ansi
 
 ENV SESSION_DRIVER=file \
     CACHE_STORE=file \

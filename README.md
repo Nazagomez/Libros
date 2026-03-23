@@ -31,3 +31,5 @@ Abre `http://127.0.0.1:8000`.
 | `APP_URL` | La URL que te da Render (ej. `https://tu-app.onrender.com`) |
 
 El contenedor arranca con `php artisan serve` en el puerto que define Render (`PORT`).
+
+En el repositorio, `.env.example` usa `SESSION_DRIVER=file`, `CACHE_STORE=file` y `QUEUE_CONNECTION=sync` para que Artisan y el despliegue no dependan de tablas en base de datos (esta tarea no usa BD).
