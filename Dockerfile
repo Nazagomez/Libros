@@ -1,5 +1,17 @@
-FROM php:8.3-cli-bookworm
+# Install PHP dependencies using Composer's image (avoids missing extensions during install).
+FROM composer:2 AS vendor
+WORKDIR /app
+COPY composer.json composer.lock ./
+ENV COMPOSER_ALLOW_SUPERUSER=1 \
+    COMPOSER_MEMORY_LIMIT=-1
+RUN composer install \
+    --no-dev \
+    --no-scripts \
+    --no-interaction \
+    --prefer-dist \
+    --optimize-autoloader
 
+FROM php:8.3-cli-bookworm
 WORKDIR /var/www/html
 
 RUN set -eux; \
@@ -17,19 +29,16 @@ RUN set -eux; \
     apt-get clean; \
     rm -rf /var/lib/apt/lists/*
 
-COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
-
-ENV COMPOSER_ALLOW_SUPERUSER=1 \
-    COMPOSER_MEMORY_LIMIT=-1
-
+COPY --from=vendor /app/vendor ./vendor
 COPY . .
 
-RUN composer install --no-dev --optimize-autoloader --no-interaction --no-scripts \
-    && mkdir -p bootstrap/cache storage/framework/sessions storage/framework/views storage/framework/cache/data storage/logs \
-    && chmod -R 775 storage bootstrap/cache \
-    && cp .env.example .env \
-    && php artisan key:generate --force --no-interaction \
-    && php artisan package:discover --ansi
+RUN mkdir -p bootstrap/cache storage/framework/sessions storage/framework/views storage/framework/cache/data storage/logs \
+    && chmod -R 775 storage bootstrap/cache
+
+RUN cp .env.example .env \
+    && php artisan key:generate --force --no-interaction
+
+RUN php artisan package:discover --ansi
 
 ENV SESSION_DRIVER=file \
     CACHE_STORE=file \
