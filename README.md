@@ -4,7 +4,7 @@ Tarea 1 — Catálogo de libros, autores y editoriales (Laravel + Blade).
 
 ## Requisitos
 
-- PHP 8.2+
+- PHP 8.4+
 - [Composer](https://getcomposer.org/)
 
 ## Instalación local
