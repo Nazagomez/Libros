@@ -2,74 +2,70 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Author;
 use Illuminate\Contracts\View\View;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 
 class AuthorController extends Controller
 {
-    /**
-     * @return array<int, array<string, mixed>>
-     */
-    private static function authors(): array
-    {
-        return [
-            [
-                'id' => 1,
-                'name' => 'Abraham Silberschatz',
-                'nationality' => 'Israelis / American',
-                'birth' => 1952,
-                'fields' => 'Database Systems, Operating Systems',
-                'book_ids' => [1, 2],
-            ],
-            [
-                'id' => 2,
-                'name' => 'Andrew S. Tanenbaum',
-                'nationality' => 'Dutch / American',
-                'birth' => 1944,
-                'fields' => 'Distributed computing, Operating Systems',
-                'book_ids' => [3, 4],
-            ],
-        ];
-    }
-
-    /**
-     * Titles for book_ids (same as BookController).
-     *
-     * @return array<int, string>
-     */
-    private static function bookTitles(): array
-    {
-        return [
-            1 => 'Operating System Concepts',
-            2 => 'Database System Concepts',
-            3 => 'Computer Networks',
-            4 => 'Modern Operating Systems',
-        ];
-    }
-
     public function index(): View
     {
+        $authors = Author::query()->orderBy('name')->get();
+
         return view('authors.index', [
-            'authors' => self::authors(),
+            'authors' => $authors,
         ]);
     }
 
-    public function show(int $id): View
+    public function create(): View
     {
-        $author = collect(self::authors())->firstWhere('id', $id);
-        if ($author === null) {
-            abort(404);
-        }
-        $books = [];
-        foreach ($author['book_ids'] as $bookId) {
-            $books[] = [
-                'id' => $bookId,
-                'title' => self::bookTitles()[$bookId] ?? 'Unknown',
-            ];
-        }
+        return view('authors.create');
+    }
+
+    public function store(Request $request): RedirectResponse
+    {
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'nationality' => 'required|string|max:255',
+            'birth' => 'required|integer|min:1000|max:'.(int) date('Y'),
+            'fields' => 'required|string|max:500',
+        ]);
+        $author = Author::query()->create($validated);
+
+        return redirect()
+            ->route('authors.show', $author)
+            ->with('status', 'Author created.');
+    }
+
+    public function show(Author $author): View
+    {
+        $author->load(['books' => fn ($query) => $query->orderBy('title')]);
 
         return view('authors.show', [
             'author' => $author,
-            'books' => $books,
         ]);
+    }
+
+    public function edit(Author $author): View
+    {
+        return view('authors.edit', [
+            'author' => $author,
+        ]);
+    }
+
+    public function update(Request $request, Author $author): RedirectResponse
+    {
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'nationality' => 'required|string|max:255',
+            'birth' => 'required|integer|min:1000|max:'.(int) date('Y'),
+            'fields' => 'required|string|max:500',
+        ]);
+        $author->update($validated);
+
+        return redirect()
+            ->route('authors.show', $author)
+            ->with('status', 'Author updated.');
     }
 }

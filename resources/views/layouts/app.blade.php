@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>@yield('title', 'Books') — Tarea 1</title>
+    <title>@yield('title', 'Books') — Tarea 2</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&display=swap" rel="stylesheet">
@@ -295,6 +295,108 @@
             font-size: 0.78rem;
             line-height: 1.45;
         }
+        .page-actions {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 1.25rem;
+        }
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.55rem 1.1rem;
+            border-radius: 999px;
+            font-size: 0.92rem;
+            font-weight: 600;
+            border: 1px solid var(--border-strong);
+            background: var(--surface);
+            color: var(--text);
+            cursor: pointer;
+            transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+        }
+        .btn:hover {
+            background: var(--surface-2);
+            color: var(--accent);
+        }
+        .btn--primary {
+            background: var(--accent);
+            color: #fff;
+            border-color: var(--accent);
+        }
+        .btn--primary:hover {
+            background: var(--accent-hover);
+            color: #fff;
+            border-color: var(--accent-hover);
+        }
+        .btn--ghost {
+            background: transparent;
+        }
+        .status-banner {
+            margin-bottom: 1.25rem;
+            padding: 0.75rem 1rem;
+            border-radius: var(--radius-sm);
+            background: var(--accent-soft);
+            color: var(--accent);
+            font-size: 0.92rem;
+            font-weight: 600;
+            border: 1px solid rgba(44, 95, 78, 0.2);
+        }
+        .form-stack {
+            display: flex;
+            flex-direction: column;
+            gap: 1.1rem;
+            max-width: 520px;
+        }
+        .form-field label {
+            display: block;
+            font-size: 0.78rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: var(--muted);
+            margin-bottom: 0.35rem;
+        }
+        .form-field input,
+        .form-field select,
+        .form-field textarea {
+            width: 100%;
+            padding: 0.6rem 0.75rem;
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--border-strong);
+            background: var(--surface);
+            font-family: inherit;
+            font-size: 1rem;
+            color: var(--text);
+        }
+        .form-field textarea { min-height: 88px; resize: vertical; }
+        .form-field input:focus,
+        .form-field select:focus,
+        .form-field textarea:focus {
+            outline: 2px solid var(--accent);
+            outline-offset: 1px;
+            border-color: transparent;
+        }
+        .form-error {
+            margin: 0.35rem 0 0;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #a34d4d;
+        }
+        .form-actions-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.65rem;
+            margin-top: 0.25rem;
+        }
+        .hero-actions {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 0.65rem;
+            margin-top: 0.75rem;
+        }
         @media (max-width: 560px) {
             dl.detail-list {
                 grid-template-columns: 1fr;
@@ -321,10 +423,13 @@
         </div>
     </header>
     <main class="site-main">
+        @if (session('status'))
+            <p class="status-banner" role="status">{{ session('status') }}</p>
+        @endif
         @yield('content')
     </main>
     <footer class="site-footer">
-        Tarea 1 — Books, authors &amp; publishers
+        Tarea 2 — Books, authors &amp; publishers (SQLite)
     </footer>
 </body>
 </html>

@@ -5,36 +5,44 @@
 @section('content')
     <div class="page-hero">
         <p class="page-hero__eyebrow">Architecture</p>
-        <h1>Controllers &amp; views</h1>
-        <p>How routes map to controllers and Blade templates.</p>
+        <h1>Controllers, models &amp; views</h1>
+        <p>Routes invoke controllers; controllers read and write SQLite through Eloquent models; Blade renders HTML.</p>
     </div>
     <div class="diagram-box">
-        <pre>┌─────────────────────────────────────────────────────────────────────────┐
-│                           routes/web.php                                 │
-│  GET /  │  /books  │  /books/{id}  │  /authors  │  /authors/{id}         │
-│         │  /publishers  │  /publishers/{id}  │  /diagram                  │
-└─────────────────────────────────────────────────────────────────────────┘
-         │              │                │                  │
-         ▼              ▼                ▼                  ▼
-┌────────────┐  ┌──────────────┐  ┌────────────────┐  ┌──────────────────┐
-│ (closure)  │  │ BookController│  │ AuthorController│  │ PublisherController│
-│ redirect   │  │ index / show  │  │ index / show    │  │ index / show       │
-└────────────┘  └───────┬───────┘  └────────┬───────┘  └─────────┬────────┘
-                        │                   │                     │
-                        ▼                   ▼                     ▼
-                 ┌─────────────┐    ┌─────────────┐        ┌─────────────┐
-                 │ books/      │    │ authors/    │        │ publishers/ │
-                 │ index.blade │    │ index.blade │        │ index.blade │
-                 │ show.blade  │    │ show.blade  │        │ show.blade  │
-                 └─────────────┘    └─────────────┘        └─────────────┘
-                        │                   │                     │
-                        └───────────────────┴─────────────────────┘
-                                            │
-                                            ▼
-                                   ┌─────────────────┐
-                                   │ layouts/app.blade│
-                                   └─────────────────┘
+        <pre>┌──────────────────────────────────────────────────────────────────────────────┐
+│  SQLite database/database.sqlite                                               │
+│  tables: authors, publishers, books (FK: author_id, publisher_id)              │
+└──────────────────────────────────────────────────────────────────────────────┘
+         ▲                    ▲                    ▲
+         │ Eloquent           │                    │
+┌────────┴────────┐  ┌────────┴─────────┐  ┌───────┴──────────┐
+│ Author          │  │ Publisher        │  │ Book             │
+│ (model)         │  │ (model)          │  │ (model)          │
+└────────┬────────┘  └────────┬─────────┘  └───────┬──────────┘
+         │                    │                    │
+         ▼                    ▼                    ▼
+┌─────────────────┐  ┌──────────────────┐  ┌───────────────────┐
+│ AuthorController│  │ PublisherController│  │ BookController    │
+│ index create    │  │ index create      │  │ index create      │
+│ store show      │  │ store show        │  │ store show        │
+│ edit update     │  │ edit update       │  │ edit update       │
+└────────┬────────┘  └────────┬─────────┘  └────────┬──────────┘
+         │                    │                     │
+         ▼                    ▼                     ▼
+┌─────────────────┐  ┌──────────────────┐  ┌───────────────────┐
+│ authors/        │  │ publishers/       │  │ books/            │
+│ index create    │  │ index create      │  │ index create      │
+│ edit show       │  │ edit show         │  │ edit show         │
+└────────┬────────┘  └────────┬─────────┘  └────────┬──────────┘
+         │                    │                     │
+         └────────────────────┴─────────────────────┘
+                              │
+                              ▼
+                    ┌──────────────────┐
+                    │ layouts/app      │
+                    └──────────────────┘
 
-GET /diagram → diagram.blade</pre>
+routes/web.php  →  Route::resource(...) for books, authors, publishers (no destroy)
+GET /diagram  →  diagram.blade (this page)</pre>
     </div>
 @endsection

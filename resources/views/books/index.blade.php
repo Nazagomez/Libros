@@ -7,6 +7,9 @@
         <p class="page-hero__eyebrow">Catalog</p>
         <h1>Books</h1>
         <p>Explore titles, editions, and jump to each book’s author and publisher.</p>
+        <div class="hero-actions">
+            <a class="btn btn--primary" href="{{ route('books.create') }}">Add book</a>
+        </div>
     </div>
     <div class="card table-wrap">
         <table>
@@ -21,10 +24,10 @@
             <tbody>
                 @foreach ($books as $book)
                     <tr>
-                        <td><a href="{{ route('books.show', $book['id']) }}">{{ $book['title'] }}</a></td>
-                        <td>{{ $book['edition'] }}</td>
-                        <td>{{ $book['copyright'] }}</td>
-                        <td>{{ number_format($book['pages']) }}</td>
+                        <td><a href="{{ route('books.show', $book) }}">{{ $book->title }}</a></td>
+                        <td>{{ $book->edition }}</td>
+                        <td>{{ $book->copyright }}</td>
+                        <td>{{ number_format($book->pages) }}</td>
                     </tr>
                 @endforeach
             </tbody>

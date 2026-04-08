@@ -2,72 +2,70 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Publisher;
 use Illuminate\Contracts\View\View;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 
 class PublisherController extends Controller
 {
-    /**
-     * @return array<int, array<string, mixed>>
-     */
-    private static function publishers(): array
-    {
-        return [
-            [
-                'id' => 1,
-                'name' => 'John Wiley & Sons',
-                'country' => 'United States',
-                'founded' => 1807,
-                'genre' => 'Academic',
-                'book_ids' => [1, 2],
-            ],
-            [
-                'id' => 2,
-                'name' => 'Pearson Education',
-                'country' => 'United Kingdom',
-                'founded' => 1844,
-                'genre' => 'Education',
-                'book_ids' => [3, 4],
-            ],
-        ];
-    }
-
-    /**
-     * @return array<int, string>
-     */
-    private static function bookTitles(): array
-    {
-        return [
-            1 => 'Operating System Concepts',
-            2 => 'Database System Concepts',
-            3 => 'Computer Networks',
-            4 => 'Modern Operating Systems',
-        ];
-    }
-
     public function index(): View
     {
+        $publishers = Publisher::query()->orderBy('name')->get();
+
         return view('publishers.index', [
-            'publishers' => self::publishers(),
+            'publishers' => $publishers,
         ]);
     }
 
-    public function show(int $id): View
+    public function create(): View
     {
-        $publisher = collect(self::publishers())->firstWhere('id', $id);
-        if ($publisher === null) {
-            abort(404);
-        }
-        $books = [];
-        foreach ($publisher['book_ids'] as $bookId) {
-            $books[] = [
-                'id' => $bookId,
-                'title' => self::bookTitles()[$bookId] ?? 'Unknown',
-            ];
-        }
+        return view('publishers.create');
+    }
+
+    public function store(Request $request): RedirectResponse
+    {
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'country' => 'required|string|max:255',
+            'founded' => 'required|integer|min:1000|max:'.(int) date('Y'),
+            'genre' => 'required|string|max:255',
+        ]);
+        $publisher = Publisher::query()->create($validated);
+
+        return redirect()
+            ->route('publishers.show', $publisher)
+            ->with('status', 'Publisher created.');
+    }
+
+    public function show(Publisher $publisher): View
+    {
+        $publisher->load(['books' => fn ($query) => $query->orderBy('title')]);
 
         return view('publishers.show', [
             'publisher' => $publisher,
-            'books' => $books,
         ]);
+    }
+
+    public function edit(Publisher $publisher): View
+    {
+        return view('publishers.edit', [
+            'publisher' => $publisher,
+        ]);
+    }
+
+    public function update(Request $request, Publisher $publisher): RedirectResponse
+    {
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'country' => 'required|string|max:255',
+            'founded' => 'required|integer|min:1000|max:'.(int) date('Y'),
+            'genre' => 'required|string|max:255',
+        ]);
+        $publisher->update($validated);
+
+        return redirect()
+            ->route('publishers.show', $publisher)
+            ->with('status', 'Publisher updated.');
     }
 }

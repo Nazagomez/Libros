@@ -7,6 +7,9 @@
         <p class="page-hero__eyebrow">People</p>
         <h1>Authors</h1>
         <p>Open a profile to see research fields and every book in this catalog.</p>
+        <div class="hero-actions">
+            <a class="btn btn--primary" href="{{ route('authors.create') }}">Add author</a>
+        </div>
     </div>
     <div class="card table-wrap">
         <table>
@@ -20,9 +23,9 @@
             <tbody>
                 @foreach ($authors as $author)
                     <tr>
-                        <td><a href="{{ route('authors.show', $author['id']) }}">{{ $author['name'] }}</a></td>
-                        <td>{{ $author['nationality'] }}</td>
-                        <td>{{ $author['birth'] }}</td>
+                        <td><a href="{{ route('authors.show', $author) }}">{{ $author->name }}</a></td>
+                        <td>{{ $author->nationality }}</td>
+                        <td>{{ $author->birth }}</td>
                     </tr>
                 @endforeach
             </tbody>
