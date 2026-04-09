@@ -14,4 +14,5 @@ else
   touch database/database.sqlite
 fi
 php artisan migrate --force --no-interaction
+php artisan db:seed --class=CatalogSeeder --force --no-interaction
 exec php -S "0.0.0.0:${PORT:-8080}" -t public public/index.php
